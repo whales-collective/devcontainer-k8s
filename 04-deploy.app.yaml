@@ -1,0 +1,74 @@
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-webapp
+  labels:
+    component: webapp
+spec:
+  selector:
+    app: demo-webapp
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-webapp
+  labels:
+    component: webapp
+spec:
+  replicas: 3 # 👋
+  selector:
+    matchLabels:
+      app: demo-webapp
+  template:
+    metadata:
+      labels:
+        app: demo-webapp
+    spec:
+      containers:
+        - name: demo-webapp
+          image: philippecharriere494/paris-restaurants:2026-01-devcontainer
+          env:
+          - name: MESSAGE
+            value: "👋 Hello World 🌍 I'm running on K8S on Docker"
+          - name: REDIS_URL
+            value: "redis-server:6379"
+          - name: TITLE
+            value: "My favorite restaurants in Paris 🍄‍🟫"
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+          imagePullPolicy: Always
+          #imagePullPolicy: IfNotPresent
+
+---
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-webapp
+  labels:
+    component: webapp
+spec:
+  rules:
+    - host: restaurants.0.0.0.0.nip.io
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service: 
+              name: demo-webapp
+              port: 
+                number: 80

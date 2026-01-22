@@ -1,0 +1,49 @@
+services:
+
+  kubernetes-workspace:
+    build:
+      context: .
+      platforms:
+        #- "linux/amd64"
+        - "linux/arm64"
+      dockerfile: Dockerfile
+      args:
+        - GO_VERSION=1.25.5
+        - NODE_MAJOR=22
+        - USER_NAME=${USER}
+        - KUBECTL_VERSION=1.31.1
+        - HELM_VERSION=3.19.0 
+        - K9S_VERSION=0.50.12
+    network_mode: "host"   
+    #ports:
+    #  - 9090:8080 
+    volumes:
+      - ../..:/workspaces:cached      
+    command: sleep infinity
+    #networks:
+    #  - database
+
+  redis-server:
+    image: redis:7.2.4
+    environment: 
+      - REDIS_ARGS=--save 30 1
+    ports:
+      - 6379:6379
+    volumes:
+      - ../scripts:/scripts
+      - ../data:/data
+    #networks:
+    #  - database
+
+  redis-data-loader:
+    image: redis:7.2.4
+    depends_on:
+      redis-server:
+        condition: service_started
+    volumes:
+      - ../scripts:/scripts
+    entrypoint: ["/scripts/load.sh"]
+
+
+#networks:
+#  database:
