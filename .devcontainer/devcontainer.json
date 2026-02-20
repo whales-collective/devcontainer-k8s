@@ -3,7 +3,7 @@
 
 	"dockerComposeFile": "compose.yml",
 	"service": "kubernetes-workspace",
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "workspaceFolder": "/workspaces",
 	"customizations": {
 		"vscode": {
 			"extensions": [

@@ -18,7 +18,7 @@ services:
     #ports:
     #  - 9090:8080 
     volumes:
-      - ../..:/workspaces:cached      
+      - ..:/workspaces:cached      
     command: sleep infinity
     #networks:
     #  - database
